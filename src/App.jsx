@@ -1,66 +1,56 @@
-import React, { createContext, Component } from "react";
-import "./App.css";
+import React, { Component, PureComponent, memo } from "react";
 
-const BatteryContext = createContext();
-const OnlineContext = createContext();
+// class Foo extends Component {
+//   shouldComponentUpdate(nextProps, nextState) {
+//     if (nextProps.name === this.props.name) {
+//       return false;
+//     }
+//     return true;
+//   }
+//   render() {
+//     console.log("Foo render");
+//     return null;
+//   }
+// }
 
-class Leaf extends Component {
-  static contextType = BatteryContext;
+class Foo1 extends PureComponent {
   render() {
-    const battery = this.context;
-    return (
-     
-       <h1>Battert:{battery} </h1>
-    
-    );
+    console.log("Foo1 render");
+    return <div>{this.props.person.age}</div>;
   }
 }
 
-class Middle extends Component {
-  render() {
-    return <Leaf />;
-  }
-}
+const Foo3 = memo(function Foo3(props) {
+  console.log("Foo3 render");
+  return <div>{props.person.age}</div>;
+});
 
-class App extends Component {
+export default class App extends Component {
   state = {
-    online: false,
-    battery: 60,
+    count: 0,
+    person: {
+      age: 1,
+    },
   };
-  batteryClick = () => {
-    this.setState({
-      battery: this.state.battery - 1,
-    });
-  };
-  onlineClick = () => {
-    this.setState({
-      online: !this.state.online,
-    });
-  };
+  callback = () => {};
   render() {
-    const { battery, online } = this.state;
+    const person = this.state.person;
     return (
-      <BatteryContext.Provider value={battery}>
-        <OnlineContext.Provider value={online}>
-          <button
-            type="button"
-            //   onClick={() => this.setState({ battery: battery - 1 })}
-            onClick={() => this.batteryClick()}
-          >
-            battery
-          </button>
-          <button
-            type="button"
-            //   onClick={() => this.setState({ battery: battery - 1 })}
-            onClick={() => this.onlineClick()}
-          >
-            online
-          </button>
-          <Middle />
-        </OnlineContext.Provider>
-      </BatteryContext.Provider>
+      <div>
+        <button
+          onClick={() => {
+            person.age++;
+            this.setState({
+              count: this.state.count + 1,
+            });
+          }}
+        >
+          Add
+        </button>
+        {/* <Foo person={person} /> */}
+        <Foo1 person={person} cb={this.callback} />
+        <Foo3 person={person} cb={this.callback} />
+      </div>
     );
   }
 }
-
-export default App;
