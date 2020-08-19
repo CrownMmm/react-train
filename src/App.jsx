@@ -1,66 +1,117 @@
-import React, { createContext, Component } from "react";
+import React, { useState, Component, useEffect } from "react";
 import "./App.css";
 
-const BatteryContext = createContext();
-const OnlineContext = createContext();
-
-class Leaf extends Component {
-  static contextType = BatteryContext;
-  render() {
-    const battery = this.context;
-    return (
-     
-       <h1>Battert:{battery} </h1>
-    
-    );
-  }
-}
-
-class Middle extends Component {
-  render() {
-    return <Leaf />;
-  }
-}
-
-class App extends Component {
+class App2 extends Component {
   state = {
-    online: false,
-    battery: 60,
+    count: 0,
+    size: {
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight,
+    },
   };
-  batteryClick = () => {
+  onResize = () => {
     this.setState({
-      battery: this.state.battery - 1,
+      size: {
+        width: document.documentElement.clientWidth,
+        height: document.documentElement.clientHeight,
+      },
     });
   };
-  onlineClick = () => {
-    this.setState({
-      online: !this.state.online,
-    });
-  };
+  componentDidMount() {
+    document.title = this.state.count;
+    window.addEventListener("resize", this.onResize, false);
+  }
+
+  componentDidUpdate() {
+    document.title = this.state.count;
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.onResize, false);
+  }
+
   render() {
-    const { battery, online } = this.state;
+    const { count, size } = this.state;
     return (
-      <BatteryContext.Provider value={battery}>
-        <OnlineContext.Provider value={online}>
-          <button
-            type="button"
-            //   onClick={() => this.setState({ battery: battery - 1 })}
-            onClick={() => this.batteryClick()}
-          >
-            battery
-          </button>
-          <button
-            type="button"
-            //   onClick={() => this.setState({ battery: battery - 1 })}
-            onClick={() => this.onlineClick()}
-          >
-            online
-          </button>
-          <Middle />
-        </OnlineContext.Provider>
-      </BatteryContext.Provider>
+      <button
+        type="button"
+        onClick={() => {
+          this.setState({
+            count: count + 1,
+          });
+        }}
+      >
+        Click({count}) size:{size.width}x{size.height}
+      </button>
     );
   }
 }
 
+function App(props) {
+  const [count, setCount] = useState(0);
+  const [size, setSize] = useState({
+    width: document.documentElement.clientWidth,
+    height: document.documentElement.clientHeight,
+  });
+
+  const onResize = () => {
+    setSize({
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight,
+    });
+  };
+
+  useEffect(() => {
+    document.title = count;
+  });
+
+  //当useeffect传入数组内当值发生变化时 useeffect才会继续执行 (传入空数组时，只运行一次)
+
+  useEffect(() => {
+    console.log("count:", count);
+  }, [count]);
+
+  //   useEffect(() => {
+  //     console.log("count1:", count);
+  //   });
+  useEffect(() => {
+    window.addEventListener("resize", onResize, false);
+    return () => {
+      window.removeEventListener("resize", onResize, false);
+    };
+  }, []);
+
+  const onClick = () => {
+    console.log("click");
+  };
+  useEffect(() => {
+    document.querySelector("#size").addEventListener("click", onClick, false);
+    return () => {
+      document
+        .querySelector("#size")
+        .removeEventListener("click", onClick, false);
+    };
+  });
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => {
+          setCount(count + 1);
+        }}
+      >
+        Click({count})
+      </button>
+      {count % 2 ? (
+        <span id="size">
+          size:{size.width}x{size.height}
+        </span>
+      ) : (
+        <p id="size">
+          size:{size.width}x{size.height}
+        </p>
+      )}
+    </div>
+  );
+}
 export default App;
