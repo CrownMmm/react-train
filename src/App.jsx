@@ -1,7 +1,21 @@
 import React, { useState, useCallback, useRef, useEffect, memo } from "react";
 import "./App.css";
+import { createAdd, createRemove, createSet, createToggle } from "./actions";
+import reducer from "./reducers";
 
-let idSeq = Date.now();
+function bindActionCreators(actionCreators, dispatch) {
+  const ret = {};
+
+  for (const key in actionCreators) {
+    ret[key] = function (...args) {
+      const actionCreator = actionCreators[key];
+      const action = actionCreator(...args);
+      dispatch(action);
+    };
+  }
+
+  return ret;
+}
 
 const Control = memo(function Control(props) {
   const { addTodo } = props;
@@ -13,11 +27,12 @@ const Control = memo(function Control(props) {
       return;
     }
 
-    addTodo({
-      id: ++idSeq,
-      text: newText,
-      complete: false,
-    });
+    // addTodo({
+    //   id: ++idSeq,
+    //   text: newText,
+    //   complete: false,
+    // });
+    addTodo(newText);
     inputRef.current.value = "";
   };
   return (
@@ -36,17 +51,16 @@ const Control = memo(function Control(props) {
 });
 
 const Todos = memo(function Todos(props) {
-  const { todos, toggleTodo, removeTodo } = props;
-
+  const { todos, removeTodo, toggleTodo } = props;
   return (
     <ul>
       {todos.map((todo) => {
         return (
           <TodoItem
             key={todo.id}
+            removeTodo={removeTodo}
             toggleTodo={toggleTodo}
             todo={todo}
-            removeTodo={removeTodo}
           />
         );
       })}
@@ -57,8 +71,8 @@ const Todos = memo(function Todos(props) {
 const TodoItem = memo(function TodoItem(props) {
   const {
     todo: { id, text, complete },
-    toggleTodo,
     removeTodo,
+    toggleTodo,
   } = props;
   const onChange = () => {
     toggleTodo(id);
@@ -77,35 +91,50 @@ const TodoItem = memo(function TodoItem(props) {
 });
 
 const LS_KEY = "$todo_key";
+let store = {
+  todos: [],
+  incrementCount: 0,
+};
 
 export default function TodoList() {
   const [todos, setTodos] = useState([]);
-  const addTodo = useCallback((todo) => {
-    setTodos((todos) => [...todos, todo]);
-  }, []);
-  const removeTodo = useCallback((id) => {
-    setTodos((todos) =>
-      todos.filter((todo) => {
-        return todo.id !== id;
-      })
-    );
-  }, []);
-  const toggleTodo = useCallback((id) => {
-    setTodos((todos) =>
-      todos.map((todo) => {
-        return todo.id === id
-          ? {
-              ...todo,
-              complete: !todo.complete,
-            }
-          : todo;
-      })
-    );
-  }, []);
+  const [incrementCount, setIncrementCount] = useState(0);
+
+  useEffect(() => {
+    Object.assign(store, {
+      todos,
+      incrementCount,
+    });
+  }, [todos,incrementCount]);
+
+  const dispatch =
+    (action) => {
+      const state = {
+        todos,
+        incrementCount,
+      };
+      const setters = {
+        todos: setTodos,
+        incrementCount: setIncrementCount,
+      };
+
+      if ("function" === typeof action) {
+        action(dispatch, () => store);
+        return;
+      }
+
+      const newState = reducer(store, action);
+
+      for (let key in newState) {
+        setters[key](newState[key]);
+      }
+    }
+  
 
   useEffect(() => {
     const todos = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
     setTodos(todos);
+    dispatch(createSet(todos));
   }, []);
 
   useEffect(() => {
@@ -114,9 +143,25 @@ export default function TodoList() {
 
   return (
     <div className="todo-list">
-      <Control addTodo={addTodo} />
+      <Control
+        {...bindActionCreators(
+          {
+            addTodo: createAdd,
+          },
+          dispatch
+        )}
+      />
 
-      <Todos removeTodo={removeTodo} toggleTodo={toggleTodo} todos={todos} />
+      <Todos
+        {...bindActionCreators(
+          {
+            removeTodo: createRemove,
+            toggleTodo: createToggle,
+          },
+          dispatch
+        )}
+        todos={todos}
+      />
     </div>
   );
 }
