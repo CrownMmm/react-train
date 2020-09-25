@@ -12,7 +12,7 @@
 
 .journey-switch {
   width: 70px;
-  height: 35px;
+  height: 40px;
   line-height: 40px;
   transition-property: transform;
   transition-duration: 0.3s;
@@ -37,7 +37,7 @@
 
 .journey-to {
   text-align: right;
-  margin-right: 10px;
+  /* margin-right: 10px; */
 }
 .journey-from {
   text-align: left;
