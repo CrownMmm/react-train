@@ -23,7 +23,7 @@ export const ACTION_SET_SEARCH_PARSED = 'SET_SEARCH_PARSED';
 export const ACTION_SET_IS_LOADING_CITY_DATA = 'SET_IS_LOADING_CITY_DATA';
 export const ACTION_SET_CITY_DATA = 'SET_CITY_DATA';
 export const ACTION_SET_IS_CITY_SELECTOR_VISIBLE = 'SET_IS_CITY_SELECTOR_VISIBLE';
-export const ACTION_SET_IS_DATE_SELECTOR_VISIBLE ='SET_IS_DATE_SELECTOR_VISIBLE';
+export const ACTION_SET_IS_DATE_SELECTOR_VISIBLE = 'SET_IS_DATE_SELECTOR_VISIBLE';
 export const ACTION_SET_CURRENT_SELECTING_LEFT_CITY = 'SET_CURRENT_SELECTING_LEFT_CITY';
 
 
@@ -41,10 +41,10 @@ export function setTo(to) {
   };
 }
 
-export function setIsLoadingCityData(to) {
+export function setIsLoadingCityData(isLoadingCityData) {
   return {
     type: ACTION_SET_IS_LOADING_CITY_DATA,
-    payload: to,
+    payload: isLoadingCityData,
   };
 }
 
@@ -101,6 +101,7 @@ export function setSelectedCity(city) {
     } else {
       dispatch(setTo(city));
     }
+    dispatch(hideCitySelector());
   }
 }
 
@@ -120,8 +121,40 @@ export function hideDateSelector() {
 
 export function exchangeFromTo(city) {
   return (dispatch, getState) => {
-    const { from ,to } = getState();
+    const { from, to } = getState();
     dispatch(setFrom(to));
     dispatch(setTo(from))
+  }
+}
+
+export function fetchCityData() {
+  return (dispatch, getState) => {
+    const { isLoadingCityData } = getState()
+    if (isLoadingCityData) {
+      return;
+    }
+
+    const cache = JSON.parse(localStorage.getItem('city_data_cache') || '{}')
+    if (Date.now() < cache.expires) {
+      dispatch(setCityData(cache.data));
+      return;
+    }
+
+
+    dispatch(setIsLoadingCityData(true))
+
+    fetch('/rest/cities?_' + Date.now())
+      .then(res => res.json())
+      .then(cityData => {
+        dispatch(setCityData(cityData))
+        localStorage.setItem('city_data_cache', JSON.stringify({
+          expires: Date.now() + 60 * 1000,
+          data: cityData
+        }))
+        dispatch(setIsLoadingCityData(false))
+      })
+      .catch(() => {
+        dispatch(setIsLoadingCityData(false))
+      })
   }
 }
