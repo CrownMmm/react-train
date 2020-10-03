@@ -11,8 +11,7 @@ import Submit from "./Submit";
 import CitySelector from "../common/CitySelector";
 import DateSelector from "../common/DateSelector";
 
-import { h0 } from '../common/fp';
-
+import { h0 } from "../common/fp";
 
 import {
   exchangeFromTo,
@@ -23,6 +22,7 @@ import {
   showDateSelector,
   hideDateSelector,
   setDepartDate,
+  toggleHighSpeed,
 } from "./actions";
 
 function App(props) {
@@ -35,6 +35,7 @@ function App(props) {
     cityData,
     isLoadingCityData,
     departDate,
+    highSpeed
   } = props;
   const onBack = useCallback(() => {
     window.history.back();
@@ -80,6 +81,15 @@ function App(props) {
     );
   }, []);
 
+  const highSpeedCbs = useMemo(() => {
+    return bindActionCreators(
+      {
+        toggle: toggleHighSpeed,
+      },
+      dispatch
+    );
+  }, []);
+
   const onSelectDate = useCallback((day) => {
     if (!day) {
       return;
@@ -98,10 +108,10 @@ function App(props) {
       <div className="header-wrapper">
         <Header title="火车票" onBack={onBack} />
       </div>
-      <form action="" className="form">
+      <form action="./query.html" className="form">
         <Journey from={from} to={to} {...cbs} />
         <DepartDate time={departDate} {...departDateCbs} />
-        <HighSpeed />
+        <HighSpeed highSpeed={highSpeed} {...highSpeedCbs} />
         <Submit />
       </form>
       <CitySelector
