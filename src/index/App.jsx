@@ -9,6 +9,10 @@ import HighSpeed from "./HighSpeed";
 import Journey from "./Journey";
 import Submit from "./Submit";
 import CitySelector from "../common/CitySelector";
+import DateSelector from "../common/DateSelector";
+
+import { h0 } from '../common/fp';
+
 
 import {
   exchangeFromTo,
@@ -17,6 +21,7 @@ import {
   fetchCityData,
   setSelectedCity,
   showDateSelector,
+  hideDateSelector,
   setDepartDate,
 } from "./actions";
 
@@ -26,6 +31,7 @@ function App(props) {
     to,
     dispatch,
     isCitySelectorVisible,
+    isDateSelectorVisible,
     cityData,
     isLoadingCityData,
     departDate,
@@ -65,6 +71,28 @@ function App(props) {
     );
   }, []);
 
+  const dateSelectorCbs = useMemo(() => {
+    return bindActionCreators(
+      {
+        onBack: hideDateSelector,
+      },
+      dispatch
+    );
+  }, []);
+
+  const onSelectDate = useCallback((day) => {
+    if (!day) {
+      return;
+    }
+
+    if (day < h0()) {
+      return;
+    }
+
+    dispatch(setDepartDate(day));
+    dispatch(hideDateSelector());
+  }, []);
+
   return (
     <div>
       <div className="header-wrapper">
@@ -81,6 +109,11 @@ function App(props) {
         cityData={cityData}
         isLoading={isLoadingCityData}
         {...citySelectorCbs}
+      />
+      <DateSelector
+        show={isDateSelectorVisible}
+        {...dateSelectorCbs}
+        onSelect={onSelectDate}
       />
     </div>
   );
