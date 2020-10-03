@@ -5,13 +5,16 @@
   right: 0;
   z-index: 2;
 }
-.nav-wrapper {
+
+.header-wrapper {
   position: fixed;
-  top: 44px;
   left: 0;
   right: 0;
+  top: 0;
+  z-index: 2;
 }
+
 .form {
-  padding: 5px,5px,0 !important ; 
+  padding: 5px 15px 0;
   background: #fff;
 }

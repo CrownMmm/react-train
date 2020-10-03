@@ -10,7 +10,15 @@ import Journey from "./Journey";
 import Submit from "./Submit";
 import CitySelector from "../common/CitySelector";
 
-import { exchangeFromTo, hideCitySelector, showCitySelector ,fetchCityData,setSelectedCity} from "./actions";
+import {
+  exchangeFromTo,
+  hideCitySelector,
+  showCitySelector,
+  fetchCityData,
+  setSelectedCity,
+  showDateSelector,
+  setDepartDate,
+} from "./actions";
 
 function App(props) {
   const {
@@ -20,6 +28,7 @@ function App(props) {
     isCitySelectorVisible,
     cityData,
     isLoadingCityData,
+    departDate,
   } = props;
   const onBack = useCallback(() => {
     window.history.back();
@@ -30,19 +39,32 @@ function App(props) {
       {
         exchangeFromTo,
         showCitySelector,
-        hideCitySelector
+        hideCitySelector,
       },
       dispatch
     );
   }, []);
 
-  const citySelectorCbs =useMemo(()=>{
-    return bindActionCreators({
-      onBack:hideCitySelector,
-      fetchCityData,
-      onSelect:setSelectedCity
-    },dispatch)
-  },[])
+  const citySelectorCbs = useMemo(() => {
+    return bindActionCreators(
+      {
+        onBack: hideCitySelector,
+        fetchCityData,
+        onSelect: setSelectedCity,
+      },
+      dispatch
+    );
+  }, []);
+
+  const departDateCbs = useMemo(() => {
+    return bindActionCreators(
+      {
+        onClick: showDateSelector,
+      },
+      dispatch
+    );
+  }, []);
+
   return (
     <div>
       <div className="header-wrapper">
@@ -50,7 +72,7 @@ function App(props) {
       </div>
       <form action="" className="form">
         <Journey from={from} to={to} {...cbs} />
-        <DepartDate />
+        <DepartDate time={departDate} {...departDateCbs} />
         <HighSpeed />
         <Submit />
       </form>

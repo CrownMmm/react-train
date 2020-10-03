@@ -17,7 +17,7 @@ export default createStore(
     cityData: null, //城市数据
     isLoadingCityData: false,  //当前是否正在加载数据
     isDateSelectorVisible: false,  //日期选择开关
-    //departDate: Date.now(),  //  
+    departDate: Date.now(),  //  
     highSpeed: false,  // 是否选择高铁动车
 
   },

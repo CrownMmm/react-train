@@ -127,6 +127,13 @@ export function exchangeFromTo(city) {
   }
 }
 
+export function setDepartDate(departDate) {
+  return {
+      type: ACTION_SET_DEPART_DATE,
+      payload: departDate,
+  };
+}
+
 export function fetchCityData() {
   return (dispatch, getState) => {
     const { isLoadingCityData } = getState()

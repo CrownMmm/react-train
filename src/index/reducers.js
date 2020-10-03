@@ -24,11 +24,11 @@ import {
   ACTION_SET_CITY_DATA,
   ACTION_SET_IS_CITY_SELECTOR_VISIBLE,
   ACTION_SET_IS_DATE_SELECTOR_VISIBLE,
-  ACTION_SET_CURRENT_SELECTING_LEFT_CITY
-} from './actions'
+  ACTION_SET_CURRENT_SELECTING_LEFT_CITY,
+} from "./actions";
 
 export default {
-  from(state = '北京', action) {
+  from(state = "北京", action) {
     const { type, payload } = action;
     switch (type) {
       case ACTION_SET_FROM:
@@ -37,7 +37,7 @@ export default {
     }
     return state;
   },
-  to(state = '上海', action) {
+  to(state = "上海", action) {
     const { type, payload } = action;
     switch (type) {
       case ACTION_SET_TO:
@@ -100,13 +100,13 @@ export default {
     }
     return state;
   },
-  // departDate(state,action){
-  //   const {type,payload} =action;
-  //   switch (type) {
-  //     case ACTION_SET_DEPART_DATE:
-  //       return payload;
-  //       default:
-  //   }
-  //   return state;
-  // }
-}
+  departDate(state=null, action) {
+    const { type, payload } = action;
+    switch (type) {
+      case ACTION_SET_DEPART_DATE:
+        return payload;
+      default:
+    }
+    return state;
+  },
+};
