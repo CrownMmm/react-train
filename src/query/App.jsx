@@ -171,7 +171,7 @@ function App(props) {
         prev={prev}
         next={next}
         />
-      <List />
+      <List list={trainList} />
       <Bottom />
     </div>
   );
