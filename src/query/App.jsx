@@ -11,8 +11,7 @@ import Header from "../common/Header.jsx";
 import Nav from "../common/Nav.jsx";
 import List from "./List.jsx";
 import Bottom from "./Bottom.jsx";
-import useNav from '../common/useNav';
-
+import useNav from "../common/useNav";
 
 import {
   setFrom,
@@ -148,12 +147,32 @@ function App(props) {
     window.history.back();
   }, []);
 
-  const {
-    isPrevDisabled,
-    isNextDisabled,
-    prev,
-    next,
-} = useNav(departDate, dispatch, prevDate, nextDate);
+  const { isPrevDisabled, isNextDisabled, prev, next } = useNav(
+    departDate,
+    dispatch,
+    prevDate,
+    nextDate
+  );
+
+  const bottomCbs = useMemo(() => {
+    return bindActionCreators(
+      {
+        toggleOrderType,
+        toggleHighSpeed,
+        toggleOnlyTickets,
+        toggleIsFiltersVisible,
+        setCheckedTicketTypes,
+        setCheckedTrainTypes,
+        setCheckedDepartStations,
+        setCheckedArriveStations,
+        setDepartTimeStart,
+        setDepartTimeEnd,
+        setArriveTimeStart,
+        setArriveTimeEnd,
+      },
+      dispatch
+    );
+  }, []);
 
   if (!searchParsed) {
     return null;
@@ -164,15 +183,33 @@ function App(props) {
       <div className="header-wrapper">
         <Header title={`${from} ⇀ ${to}`} onBack={onBack} />
       </div>
-      <Nav 
-        date={departDate} 
+      <Nav
+        date={departDate}
         isPrevDisabled={isPrevDisabled}
         isNextDisabled={isNextDisabled}
         prev={prev}
         next={next}
-        />
+      />
       <List list={trainList} />
-      <Bottom />
+      <Bottom
+        highSpeed={highSpeed}
+        orderType={orderType}
+        onlyTickets={onlyTickets}
+        isFiltersVisible={isFiltersVisible}
+        ticketTypes={ticketTypes}
+        trainTypes={trainTypes}
+        departStations={departStations}
+        arriveStations={arriveStations}
+        checkedTicketTypes={checkedTicketTypes}
+        checkedTrainTypes={checkedTrainTypes}
+        checkedDepartStations={checkedDepartStations}
+        checkedArriveStations={checkedArriveStations}
+        departTimeStart={departTimeStart}
+        departTimeEnd={departTimeEnd}
+        arriveTimeStart={arriveTimeStart}
+        arriveTimeEnd={arriveTimeEnd}
+        {...bottomCbs}
+      />
     </div>
   );
 }
