@@ -111,6 +111,7 @@ function App(props) {
     fetch(url)
       .then((response) => response.json())
       .then((result) => {
+        console.log(result);
         const {
           dataMap: {
             directTrainInfo: {
