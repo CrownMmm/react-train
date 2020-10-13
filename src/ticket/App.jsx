@@ -27,6 +27,7 @@ import {
   setTickets,
   toggleIsScheduleVisible,
 } from "./actions";
+import { bindActionCreators } from "redux";
 
 function App(props) {
   const {
@@ -64,24 +65,21 @@ function App(props) {
     document.title = trainNumber;
   }, [trainNumber]);
 
-  useEffect(()=> {
-    if(!searchParsed) {
+  useEffect(() => {
+    if (!searchParsed) {
       return;
     }
 
-    const url = new URI('/rest/ticket')
-      .setSearch('date', dayjs(departDate).format('YYYY-MM-DD'))
-      .setSearch('trainNumber', trainNumber)
+    const url = new URI("/rest/ticket")
+      .setSearch("date", dayjs(departDate).format("YYYY-MM-DD"))
+      .setSearch("trainNumber", trainNumber)
       .toString();
 
-      fetch(url)
-      .then(response => response.json())
-      .then(result => {
+    fetch(url)
+      .then((response) => response.json())
+      .then((result) => {
         // console.log(result);
-        const {
-          detail,
-          candidates,
-        } = result;
+        const { detail, candidates } = result;
 
         const {
           departTimeStr,
@@ -90,16 +88,13 @@ function App(props) {
           durationStr,
         } = detail;
 
-
         dispatch(setDepartTimeStr(departTimeStr));
         dispatch(setArriveTimeStr(arriveTimeStr));
         dispatch(setArriveDate(arriveDate));
         dispatch(setDurationStr(durationStr));
         dispatch(setTickets(candidates));
-
       });
-
-  },[searchParsed, departDate, trainNumber])
+  }, [searchParsed, departDate, trainNumber]);
 
   const { isPrevDisabled, isNextDisabled, prev, next } = useNav(
     departDate,
@@ -107,6 +102,15 @@ function App(props) {
     prevDate,
     nextDate
   );
+
+  const detailCbs = useMemo(() => {
+    return bindActionCreators(
+      {
+        toggleIsScheduleVisible,
+      },
+      dispatch
+    );
+  }, []);
 
   if (!searchParsed) {
     return null;
@@ -124,6 +128,21 @@ function App(props) {
           isNextDisabled={isNextDisabled}
           prev={prev}
           next={next}
+        />
+      </div>
+      <div className="detail-wrapper">
+        <Detail
+          departDate={departDate}
+          arriveDate={arriveDate}
+          departTimeStr={departTimeStr}
+          arriveTimeStr={arriveTimeStr}
+          trainNumber={trainNumber}
+          departStation={departStation}
+          arriveStation={arriveStation}
+          durationStr={durationStr}
+          {
+            ...detailCbs
+          }
         />
       </div>
     </div>
