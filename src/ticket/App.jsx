@@ -9,6 +9,7 @@ import URI from "urijs";
 import dayjs from "dayjs";
 import { h0 } from "../common/fp";
 import useNav from "../common/useNav";
+import { TrainContext } from "./context.js";
 
 import "./App.css";
 
@@ -105,9 +106,12 @@ function App(props) {
   );
 
   const detailCbs = useMemo(() => {
-    return bindActionCreators({
-      toggleIsScheduleVisible,
-    }, dispatch)
+    return bindActionCreators(
+      {
+        toggleIsScheduleVisible,
+      },
+      dispatch
+    );
   }, []);
 
   if (!searchParsed) {
@@ -141,6 +145,11 @@ function App(props) {
           {...detailCbs}
         />
       </div>
+      <TrainContext.Provider
+        value={{ trainNumber, departStation, arriveStation, departDate }}
+      >
+        <Candidate tickets={tickets} />
+      </TrainContext.Provider>
       {isScheduleVisible && (
         <div
           className="mask"
