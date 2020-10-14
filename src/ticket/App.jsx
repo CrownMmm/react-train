@@ -4,7 +4,7 @@ import Detail from "../common/Detail.jsx";
 import Header from "../common/Header.jsx";
 import Nav from "../common/Nav.jsx";
 import Candidate from "./Candidate.jsx";
-import Schedule from "./Schedule.jsx";
+// import Schedule from "./Schedule.jsx";
 import URI from "urijs";
 import dayjs from "dayjs";
 import { h0 } from "../common/fp";
@@ -29,6 +29,8 @@ import {
 } from "./actions";
 import { bindActionCreators } from "redux";
 
+const Schedule = lazy(() => import("./Schedule.jsx"));
+
 function App(props) {
   const {
     departDate,
@@ -44,7 +46,6 @@ function App(props) {
     searchParsed,
     dispatch,
   } = props;
-
   const onBack = useCallback(() => {
     window.history.back();
   }, []);
@@ -104,12 +105,9 @@ function App(props) {
   );
 
   const detailCbs = useMemo(() => {
-    return bindActionCreators(
-      {
-        toggleIsScheduleVisible,
-      },
-      dispatch
-    );
+    return bindActionCreators({
+      toggleIsScheduleVisible,
+    }, dispatch)
   }, []);
 
   if (!searchParsed) {
@@ -140,11 +138,24 @@ function App(props) {
           departStation={departStation}
           arriveStation={arriveStation}
           durationStr={durationStr}
-          {
-            ...detailCbs
-          }
+          {...detailCbs}
         />
       </div>
+      {isScheduleVisible && (
+        <div
+          className="mask"
+          onClick={() => dispatch(toggleIsScheduleVisible())}
+        >
+          <Suspense fallback={<div>loading</div>}>
+            <Schedule
+              date={departDate}
+              trainNumber={trainNumber}
+              departStation={departStation}
+              arriveStation={arriveStation}
+            />
+          </Suspense>
+        </div>
+      )}
     </div>
   );
 }

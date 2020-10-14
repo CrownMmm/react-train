@@ -39,7 +39,7 @@ const Detail = memo(function Detail(props) {
           <p className="train-name">{trainNumber}</p>
           <p className="train-mid">
             <span className="left"></span>
-            <span className="schedule" onClick={() => toggleIsScheduleVisible}>
+            <span className="schedule" onClick={() => toggleIsScheduleVisible()}>
               时刻表
             </span>
             <span className="right"></span>
