@@ -9,7 +9,7 @@ import Account from "./Account.jsx";
 import Choose from "./Choose.jsx";
 import Passengers from "./Passengers.jsx";
 import Ticket from "./Ticket.jsx";
-// import Menu from './Menu.jsx'
+import Menu from "./Menu.jsx";
 import "./App.css";
 import {
   setDepartStation,
@@ -81,6 +81,42 @@ function App(props) {
     dispatch(fetchInitial(url));
   }, [departStation, arriveStation, seatType, departDate, searchParsed]);
 
+  const passengersCbs = useMemo(() => {
+    return bindActionCreators(
+      {
+        createChild,
+        createAdult,
+        removePassenger,
+        updatePassenger,
+        showGenderMenu,
+        showFollowAdultMenu,
+        showTicketTypeMenu,
+      },
+      dispatch
+    );
+  }, []);
+
+  const menuCbs = useMemo(() => {
+    return bindActionCreators(
+      {
+        hideMenu,
+      },
+      dispatch
+    );
+  }, []);
+
+  const chooseCbs = useMemo(() => {
+    return bindActionCreators(
+      {
+        updatePassenger,
+      },
+      dispatch
+    );
+  }, []);
+
+  if (!searchParsed) {
+    return null;
+  }
   return (
     <div className="app">
       <div className="header-wrapper">
@@ -97,9 +133,12 @@ function App(props) {
           arriveStation={arriveStation}
           durationStr={durationStr}
         >
-          <span style={{display: 'block'}} className="train-icon"></span>
+          <span style={{ display: "block" }} className="train-icon"></span>
         </Detail>
       </div>
+      <Ticket price={price} type={seatType} />
+      <Passengers passengers={passengers} {...passengersCbs} />
+      <Menu show={isMenuVisible} {...menu} {...menuCbs} />
     </div>
   );
 }

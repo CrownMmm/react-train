@@ -8,6 +8,12 @@ import {TrainContext} from './context';
 
 const Channel = memo(function Channel(props) {
   const { name, desc, type } = props;
+  const {
+		trainNumber,
+    departStation,
+    arriveStation,
+    departDate,
+	} =  useContext(TrainContext)
   const src = useMemo(() => {
   	return new URI('order.html')
   		.setSearch('trainNumber', trainNumber)
@@ -23,12 +29,7 @@ const Channel = memo(function Channel(props) {
     arriveStation,
     departDate,
   ])
-  const {
-		trainNumber,
-    departStation,
-    arriveStation,
-    departDate,
-	} =  useContext(TrainContext)
+  
   return (
     <div className="channel">
       <div className="middle">
@@ -68,7 +69,7 @@ const Seat = memo(function Seat(props) {
           <i>￥</i>
           {priceMsg}
         </span>
-        <span className="btn">{expanded ? "预定" : "收起"}</span>
+        <span className="btn">{!expanded ? "预定" : "收起"}</span>
         <span className="num">{ticketsLeft}</span>
       </div>
       <div

@@ -298,7 +298,7 @@ export function showTicketTypeMenu(id) {
     return (dispatch, getState) => {
         const { passengers } = getState();
 
-        const passenger = passengers.find(passenger => passenger.id === id);
+        const passenger = passengers.find(passenger => passenger.id !== id );
 
         if (!passenger) {
             return;
