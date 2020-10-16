@@ -145,6 +145,10 @@ function App(props) {
           />
         )
       }
+       <Account
+        length={passengers.length}
+        price={price}
+      />
       <Menu show={isMenuVisible} {...menu} {...menuCbs} />
     </div>
   );
