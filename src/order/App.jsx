@@ -138,6 +138,13 @@ function App(props) {
       </div>
       <Ticket price={price} type={seatType} />
       <Passengers passengers={passengers} {...passengersCbs} />
+      { passengers.length > 0 && (
+          <Choose
+            passengers={passengers}   
+            {...chooseCbs}         
+          />
+        )
+      }
       <Menu show={isMenuVisible} {...menu} {...menuCbs} />
     </div>
   );
